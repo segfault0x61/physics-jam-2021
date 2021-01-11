@@ -1,4 +1,4 @@
-class Player {
+class Ball {
   constructor(user, size, color, angle = 0) {
     this.u = user;
     this.c = color;
@@ -51,7 +51,6 @@ class Player {
       this.p.add(this.v);
       let collision = collide(current_r, current_a, yv, this.s);
       if (collision != -1) {
-        console.log(collision);
         this.l = collision;
         this.p.setMag(platforms[collision].r - this.s / 2);
         this.v.rotate(this.p.heading() + HALF_PI - this.v.heading());
@@ -67,8 +66,6 @@ class Player {
         current_a < platforms[this.l].a
       ) {
         this.l = -1;
-        console.log(current_a);
-        // this.v.add(p5.Vector.mult(this.p, -1*JUMP/this.p.mag()));
       }
     }
   }
