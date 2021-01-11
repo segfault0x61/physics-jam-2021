@@ -1,4 +1,4 @@
-let keys, ball, fix, platforms;
+let keys, ball, fix, platforms, goal;
 let rot, drot;
 const dim = 800;
 const r = 1000; //  Station radius in pixels
@@ -21,6 +21,7 @@ function setup() {
     new Platform(r, 0, TWO_PI),
   ];
   ball = new Ball(1, 40, color(50, 150, 250));
+  goal = new Goal(true, true, 150);
   for (let i = 0; i < 30; i++) {
     fix[i] = new Ball(0, 20, color(125, 125, 125), (i * PI) / 6);
   }
@@ -56,15 +57,13 @@ function rotation() {
 }
 
 function draw() {
-  background(230);
+  background(250);
   ball.update();
   for (let i = 0; i < 30; i++) {
     fix[i].update();
   }
   translate(dim / 2, dim / 2);
-  rotate(-rot + HALF_PI);
-  scale(0.5, 0.5);
-  translate(-ball.p.x, -ball.p.y);
+  goal.draw();
   ball.draw();
   for (let i = 0; i < 30; i++) {
     fix[i].draw();
@@ -72,19 +71,4 @@ function draw() {
   for (let i = 0; i < platforms.length; i++) {
     platforms[i].draw();
   }
-  // Smooth rotation
-  rot = (rot + TWO_PI) % TWO_PI;
-  let targ = (ball.p.heading() + TWO_PI) % TWO_PI;
-  let mv = targ - TWO_PI;
-  for (let i = 0; i < 2; i++) {
-    if (abs(targ - rot) < abs(mv - rot)) {
-      mv = targ;
-    }
-    targ += TWO_PI;
-  }
-  mv -= rot;
-  mv = constrain(mv / 3, -50 / r, 50 / r);
-  if (drot < mv) drot = min(mv, drot + 0.001);
-  if (drot > mv) drot = max(mv, drot - 0.001);
-  rot += drot;
 }
