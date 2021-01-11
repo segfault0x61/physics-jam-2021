@@ -8,7 +8,7 @@ class Player {
     this.p.rotate(angle);
     this.v.rotate(angle);
     this.vt = rr * this.p.mag(); // Velocity tangential, used when landed
-    this.l = 0;
+    this.l = platforms.length - 1;
   }
 
   move() {
@@ -45,22 +45,29 @@ class Player {
       this.v.setMag(this.vt);
     }
     let current_r = this.p.mag();
-    let current_a = (this.p.heading() - rotation() + TWO_PI) % TWO_PI;
+    let current_a = (this.p.heading() - rotation() + 2 * TWO_PI) % TWO_PI;
     let yv = this.v.dot(this.p) / this.p.mag();
     if (this.l == -1) {
       this.p.add(this.v);
       let collision = collide(current_r, current_a, yv, this.s);
       if (collision != -1) {
-        // don't leave the spaceship!
         console.log(collision);
         this.l = collision;
         this.p.setMag(platforms[collision].r - this.s / 2);
+        this.v.rotate(this.p.heading() + HALF_PI - this.v.heading());
+        this.v.setMag(this.vt);
       }
     }
     if (this.l != -1) {
       // Check if we walked off a platform
-      if (current_a > platforms[this.l].b || current_a < platforms[this.l].a) {
+      if (
+        (current_a > platforms[this.l].b &&
+          (platforms[this.l].a >= 0 ||
+            platforms[this.l].a + TWO_PI > current_a)) ||
+        current_a < platforms[this.l].a
+      ) {
         this.l = -1;
+        console.log(current_a);
         // this.v.add(p5.Vector.mult(this.p, -1*JUMP/this.p.mag()));
       }
     }
