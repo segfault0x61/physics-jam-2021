@@ -12,33 +12,34 @@ class Ball {
   }
 
   move() {
+    var platform = platforms[this.l];
     var rv = rr * this.p.mag(); // The speed of the ground
-    if (this.l != -1) {
-      if (keys[UP_ARROW]) {
-        this.v.add(p5.Vector.mult(this.p, (-1 * JUMP) / this.p.mag()));
-        this.l = -1;
-      }
-      if (keys[RIGHT_ARROW] && this.vt > rv - MAX_SPEED) {
-        this.vt = max(rv - MAX_SPEED, this.vt - FRICTION * 2);
-      }
-      if (keys[LEFT_ARROW] && this.vt < rv + MAX_SPEED) {
-        this.vt = min(rv + MAX_SPEED, this.vt + FRICTION * 2);
-      }
+    if (keys[RIGHT_ARROW] && this.vt > rv - MAX_SPEED) {
+      this.vt = max(rv - MAX_SPEED, this.vt - platform.friction * 2);
+    }
+    if (keys[LEFT_ARROW] && this.vt < rv + MAX_SPEED) {
+      this.vt = min(rv + MAX_SPEED, this.vt + platform.friction * 2);
+    }
+    if (keys[UP_ARROW]) {
+      this.v.add(p5.Vector.mult(this.p, (-1 * JUMP) / this.p.mag()));
+      this.l = -1;
     }
   }
 
   update() {
-    if (this.u) {
+    if (this.u && this.l != -1) {
       this.move();
     }
     var rv = rr * this.p.mag(); // The speed of the ground
     if (this.l != -1) {
+      var platform = platforms[this.l];
+
       // Friction: Tries to match ground velocity
       if (this.vt < rv) {
-        this.vt = min(rv, this.vt + FRICTION);
+        this.vt = min(rv, this.vt + platform.friction);
       }
       if (this.vt > rv) {
-        this.vt = max(rv, this.vt - FRICTION);
+        this.vt = max(rv, this.vt - platform.friction);
       }
       this.p.rotate(this.vt / this.p.mag());
       this.v.rotate(this.p.heading() + HALF_PI - this.v.heading());
@@ -78,16 +79,18 @@ class Ball {
 }
 
 class Platform {
-  constructor(radius, a, b) {
+  constructor(radius, a, b, c = color(0, 0, 0), f = 0.5) {
     this.r = radius;
     this.a = a;
     this.b = b;
+    this.c = c;
+    this.friction = f;
   }
 
   draw() {
     noFill();
-    stroke(0);
-    strokeWeight(1);
+    stroke(this.c);
+    strokeWeight(2);
     arc(0, 0, this.r * 2, this.r * 2, this.a + rotation(), this.b + rotation());
   }
 }

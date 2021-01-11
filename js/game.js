@@ -4,7 +4,6 @@ const dim = 800;
 const r = 1000; //  Station radius in pixels
 const rr = -0.01; // Rotation rate in radians per frame
 const MAX_SPEED = 10;
-const FRICTION = 0.5;
 const JUMP = 10;
 
 function setup() {
@@ -13,11 +12,12 @@ function setup() {
   keys = [];
   fix = [];
   platforms = [
-    new Platform(r - 800, 0.75, 2),
-    new Platform(r - 500, -0.5, 0.5),
-    new Platform(r - 300, HALF_PI - 0.2, HALF_PI + 0.2),
-    new Platform(r - 100, HALF_PI + 0.1, QUARTER_PI + HALF_PI + 0.1),
-    new Platform(r - 100, QUARTER_PI, HALF_PI),
+    new Platform(r - 300, -HALF_PI, QUARTER_PI),
+    new Platform(r - 250, -0.5, HALF_PI),
+    new Platform(r - 150, -0.5, 0.5),
+    new Platform(r - 100, HALF_PI - 0.2, HALF_PI + 0.2),
+    new Platform(r - 50, HALF_PI + 0.1, QUARTER_PI + HALF_PI + 0.1),
+    new Platform(r - 50, QUARTER_PI, HALF_PI, color(0, 255, 255), 0.05),
     new Platform(r, 0, TWO_PI),
   ];
   ball = new Ball(1, 40, color(50, 150, 250));
