@@ -6,6 +6,7 @@ class Entity {
     this.p.rotate(angle);
     this.v.rotate(angle);
     this.l = platforms.length - 1;
+    this.collisions = false;
   }
 
   update() {
@@ -29,15 +30,29 @@ class Entity {
         this.onFall();
       }
     }
+    if (this.collisions) {
+      for (let i = 0; i < entities.length; i++) {
+        if (
+          entities[i] != this &&
+          this.p.dist(entities[i].p) <= this.s + entities[i].s
+        ) {
+          this.onCollideEntity(entities[i]);
+        }
+      }
+    }
   }
 
   onPlatform() {}
 
   onCollide(collision) {}
 
+  onCollideEntity(entity) {}
+
   onFall() {}
 
   draw() {}
+
+  inflict(damage) {}
 }
 
 class SolidEntity extends Entity {
@@ -78,6 +93,7 @@ class Player extends SolidEntity {
   constructor(size, color, angle = 0) {
     super(size, angle);
     this.c = color;
+    this.collisions = true;
   }
 
   update() {
@@ -102,6 +118,16 @@ class Player extends SolidEntity {
     noStroke();
     fill(this.c);
     ellipse(this.p.x, this.p.y, this.s, this.s);
+  }
+
+  onCollideEntity(entity) {
+    // console.log(entity);
+  }
+
+  inflict(damage) {
+    if (damage >= 10) {
+      console.log('YOU LOSE!');
+    }
   }
 }
 
@@ -167,6 +193,7 @@ class Platform {
     this.b = b;
     this.c = c;
     this.friction = f;
+    this.solid = true;
   }
 
   draw() {

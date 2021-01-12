@@ -1,4 +1,4 @@
-let keys, ball, fix, platforms;
+let keys, ball, fix, platforms, entities;
 let rot, drot;
 let dim = 800;
 let file;
@@ -16,9 +16,10 @@ function setup() {
   keys = [];
   fix = [];
   ball = new Player(40, color(50, 150, 250));
+  entities = [ball];
   goal = new Goal(true, true, 150);
   for (let i = 0; i < 30; i++) {
-    fix[i] = new Marker(20, color(125, 125, 125), (i * PI) / 6);
+    entities.push(new Marker(20, color(125, 125, 125), (i * PI) / 6));
   }
   rot = ball.p.heading();
   drot = 0;
@@ -32,7 +33,7 @@ function keyReleased() {
   keys[keyCode] = false;
 }
 
-// is angle a between b->c
+// Is angle a between b->c
 function angleCheck(a, b, c) {
   if (b + TWO_PI == c) return true;
   a = ((a % TWO_PI) + TWO_PI) % TWO_PI;
@@ -46,7 +47,8 @@ function collide(r, a, yv, s) {
     if (
       angleCheck(a, platforms[i].a, platforms[i].b) &&
       platforms[i].r >= r + s / 2 &&
-      platforms[i].r <= r + s / 2 + yv
+      platforms[i].r <= r + s / 2 + yv &&
+      platforms[i].solid
     ) {
       return i;
     }
@@ -99,8 +101,8 @@ function readLevel(f) {
 
 function drawLevel() {
   ball.update();
-  for (let i = 0; i < 30; i++) {
-    fix[i].update();
+  for (let i = 0; i < entities.length; i++) {
+    entities[i].update();
   }
   translate(dim / 2, dim / 2);
   // rotate(-ball.p.heading()+HALF_PI);
@@ -114,9 +116,8 @@ function drawLevel() {
   scale(0.3, 0.3);
   // translate(-ball.p.x,-ball.p.y);
   goal.draw();
-  ball.draw();
-  for (let i = 0; i < 30; i++) {
-    fix[i].draw();
+  for (let i = 0; i < entities.length; i++) {
+    entities[i].draw();
   }
   for (let i = 0; i < platforms.length; i++) {
     platforms[i].draw();
