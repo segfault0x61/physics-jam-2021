@@ -64,6 +64,7 @@ class SolidEntity extends Entity {
   onCollide(collision) {
     this.l = collision;
     this.p.setMag(platforms[collision].r - this.s / 2);
+    this.vt = -1 * Math.sin(this.v.angleBetween(this.p)) * this.v.mag();
     this.v.rotate(this.p.heading() + HALF_PI - this.v.heading());
     this.v.setMag(this.vt);
   }
