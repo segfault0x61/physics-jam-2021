@@ -1,4 +1,5 @@
-let page = "Home";
+let page = "Home",
+  tPage = "Home";
 
 let keys, ball, fix, platforms, features, goal, entities;
 let clicked = false;
@@ -20,6 +21,7 @@ const levels = ["Level 1", "Level 2"];
 
 let homeButton, aboutButton;
 let donea = 0;
+let trana = 0;
 
 function preload() {
   for (let i = 0; i < levels.length; i++) {
@@ -104,12 +106,12 @@ class LevelButton {
         if (this.dir == "") {
           levelNumber = this.n;
           readLevel(levelFiles[levelNumber]);
-          page = "Game";
+          tPage = "Game";
           homeButton.x = 100;
           homeButton.y = dim - 100;
           totalCollected = 0;
         } else {
-          page = this.dir;
+          tPage = this.dir;
         }
       }
     } else {
@@ -198,7 +200,6 @@ function readLevel(f) {
   for (let i = 0; i < 12; i++) {
     entities.push(new Marker(20, color(125, 125, 125), (i * PI) / 6 + PI / 12));
   }
-  rot = ball.p.heading();
   drot = 0;
 }
 
@@ -307,7 +308,7 @@ function drawLevel() {
     homeButton.x = dim / 2 - 75;
     homeButton.y = dim / 2 + 100;
     donea = 0;
-    page = "Done";
+    page = tPage = "Done";
   }
 }
 
@@ -355,11 +356,27 @@ function draw() {
   if (page === "Home") {
     drawHome();
     gameticks = 0;
-  } else if (page === "Game") {
+  }
+  if (page === "Game") {
     drawLevel();
     gameticks++;
-  } else if (page === "Done") {
+  }
+  if (page === "Done") {
     drawDone();
   }
+
+  // Generage scene transition animation
+  if (page != tPage) {
+    trana += (255 - trana) / 5;
+    if (trana >= 250) {
+      page = tPage;
+      rot = ball.p.heading();
+    }
+  } else {
+    trana -= trana / 5;
+  }
+  noStroke();
+  fill(0, trana);
+  rect(0, 0, dim, dim);
   clicked = false;
 }
