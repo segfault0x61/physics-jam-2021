@@ -19,7 +19,7 @@ let levelFiles = [];
 let levelButtons = [];
 const levels = ["Level 1", "Level 2", "Level 3"];
 
-let homeButton, aboutButton;
+let homeButton, playAgainButton, aboutButton;
 let donea = 0;
 let trana = 0;
 
@@ -52,7 +52,8 @@ function setup() {
       );
     }
   }
-  homeButton = new LevelButton(0, dim / 2 - 75, dim / 2 + 100, "Home", "Home");
+  aboutButton = new LevelButton(0, dim - 100, dim - 100, "?", "About");
+  homeButton = new LevelButton(0, 100, dim - 100, "Home", "Home");
   rot = 0;
 }
 
@@ -234,7 +235,6 @@ function updateLevel() {
   for (let i = 0; i < features.length; i++) {
     features[i].update();
   }
-  
 }
 
 function drawHome() {
@@ -249,6 +249,8 @@ function drawHome() {
   for (let i = 0; i < levels.length; i++) {
     levelButtons[i].draw();
   }
+  aboutButton.draw();
+
   // Background rotation
   rot += 0.001;
 }
@@ -308,13 +310,13 @@ function drawLevel() {
 
   // Check if done
   if (goal.f) {
-    aboutButton = new LevelButton(
+    playAgainButton = new LevelButton(
       levelNumber,
       dim / 2 + 75,
       dim / 2 + 100,
       "Again"
     );
-    aboutButton.s = 1;
+    playAgainButton.s = 1;
     homeButton.x = dim / 2 - 75;
     homeButton.y = dim / 2 + 100;
     donea = 0;
@@ -338,7 +340,7 @@ function drawDone() {
   textAlign(CENTER, CENTER);
   text("Level complete", dim / 2, dim / 3);
   homeButton.draw();
-  aboutButton.draw();
+  playAgainButton.draw();
 
   // Update level data
   levelButtons[levelNumber].s = 2;
@@ -348,6 +350,29 @@ function drawDone() {
 
   // Fade out
   donea += (200 - donea) / 10;
+}
+
+function drawAbout() {
+  fill(255);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textFont("Courier New", 60);
+  text("About", dim / 2, dim / 4);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  text(
+    "This is a platformer game with a twist... there's no gravity. Instead, you're on a circular map that spins and generates rotational gravity. You'll find that you move differently, and you're highly encouraged to explore the mechanics of jumping.\n\nPS: arrow keys to move.",
+    100,
+    dim / 3,
+    dim - 200,
+    dim
+  );
+  homeButton.x = 100;
+  homeButton.y = dim - 100;
+  homeButton.draw();
+
+  // Background rotation
+  rot += 0.001;
 }
 
 function draw() {
@@ -373,13 +398,20 @@ function draw() {
   if (page === "Done") {
     drawDone();
   }
+  if (page === "About") {
+    drawAbout();
+  }
 
   // Generage scene transition animation
   if (page != tPage) {
     trana += (255 - trana) / 5;
     if (trana >= 250) {
       page = tPage;
-      rot = ball.p.heading();
+
+      // Align camera to player
+      if (tPage == "Game") {
+        rot = ball.p.heading();
+      }
     }
   } else {
     trana -= trana / 5;
