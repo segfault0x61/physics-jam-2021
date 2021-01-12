@@ -25,6 +25,7 @@ class Goal extends StaticObject {
     super(0, 0, s);
     this.active = active;
     this.assembled = assembled;
+    this.f = false;
     this.t = 0;
     this.particles_r = [];
     this.particles_a = [];
@@ -42,7 +43,7 @@ class Goal extends StaticObject {
 
   collide(entity) {
     if (this.active && this.assembled) {
-      console.log("YOU WIN!");
+      this.f = true;
     }
   }
 
@@ -57,12 +58,15 @@ class Goal extends StaticObject {
         fill(color(0, 155, 255));
         ellipse(this.p.x, this.p.y, this.s * 2, this.s * 2);
         noFill();
-        for (let i = 0; i < this.particles_a.length; i++) {
-          let r =
-            this.s - ((this.s * this.particles_r[i] + frameCount * 1) % this.s);
-          let a = (this.particles_a[i] + frameCount * 0.03) % TWO_PI;
-          strokeWeight(2 * sqrt(r / this.s));
-          point(r * Math.cos(a), r * Math.sin(a));
+        if (!this.f) {
+          for (let i = 0; i < this.particles_a.length; i++) {
+            let r =
+              this.s -
+              ((this.s * this.particles_r[i] + frameCount * 1) % this.s);
+            let a = (this.particles_a[i] + frameCount * 0.03) % TWO_PI;
+            strokeWeight(2 * sqrt(r / this.s));
+            point(r * Math.cos(a), r * Math.sin(a));
+          }
         }
       }
     }

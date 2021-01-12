@@ -306,6 +306,7 @@ function drawLevel() {
     aboutButton.s = 1;
     homeButton.x = dim / 2 - 75;
     homeButton.y = dim / 2 + 100;
+    donea = 0;
     page = "Done";
   }
 }
