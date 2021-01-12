@@ -19,7 +19,20 @@ class Entity {
     let yv = this.v.dot(this.p) / this.p.mag();
     if (this.l == -1) {
       this.p.add(this.v);
-      let collision = collide(current_r, current_a, yv, this.s);
+      let collision = -1;
+      for (let i = 0; i < platforms.length; i++) {
+        if (
+          platforms[i].checkCollision(
+            current_r,
+            current_a,
+            this.p.mag(),
+            this.s
+          )
+        ) {
+          collision = i;
+          break;
+        }
+      }
       if (collision != -1) {
         this.onCollide(collision);
       }
@@ -39,6 +52,9 @@ class Entity {
           this.onCollideEntity(entities[i]);
         }
       }
+    }
+    for (let i = 0; i < features.length; i++) {
+      features[i].checkCollision(this);
     }
   }
 
@@ -64,6 +80,7 @@ class SolidEntity extends Entity {
   onPlatform() {
     var rv = rr * this.p.mag(); // The speed of the ground
     var platform = platforms[this.l];
+
     // Friction: Tries to match ground velocity
     if (this.vt < rv) {
       this.vt = min(rv, this.vt + platform.friction);
@@ -121,7 +138,7 @@ class Player extends SolidEntity {
   }
 
   onCollideEntity(entity) {
-    // console.log(entity);
+    console.log(entity);
   }
 
   inflict(damage) {
@@ -144,11 +161,58 @@ class Marker extends SolidEntity {
   }
 }
 
-class Goal {
-  constructor(active, assembled, r) {
+class Platform {
+  constructor(radius, a, b, c = color(0, 0, 0), f = 0.5) {
+    this.r = radius;
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.friction = f;
+  }
+
+  checkCollision(r, a, nr, s) {
+    return (
+      angleCheck(a, this.a, this.b) &&
+      this.r >= r + s / 2 &&
+      this.r <= nr + s / 2
+    );
+  }
+
+  draw() {
+    noFill();
+    stroke(this.c);
+    strokeWeight(2);
+    arc(0, 0, this.r * 2, this.r * 2, this.a + rotation(), this.b + rotation());
+  }
+}
+
+class StaticFeature {
+  constructor(radius, a, s) {
+    this.p = createVector(0, radius);
+    this.p.rotate(a);
+    this.s = s;
+  }
+
+  checkCollision(that) {
+    if (this.p.dist(that.p) <= this.s) {
+      this.collide(that);
+    }
+  }
+
+  update() {
+    this.p.rotate(rr);
+  }
+
+  collide(entity) {}
+
+  draw() {}
+}
+
+class Goal extends StaticFeature {
+  constructor(active, assembled, s) {
+    super(0, 0, s);
     this.active = active;
     this.assembled = assembled;
-    this.r = r;
     this.t = 0;
     this.particles_r = [];
     this.particles_a = [];
@@ -158,27 +222,34 @@ class Goal {
     }
   }
 
+  checkCollision(that) {
+    if (that instanceof Player) {
+      super.checkCollision(that);
+    }
+  }
+
+  collide(entity) {
+    if (this.active && this.assembled) {
+      console.log('YOU WIN!');
+    }
+  }
+
   draw() {
     fill(color(50));
     stroke(color(0, 0, 0));
     if (this.assembled) {
-      strokeWeight(10);
-      ellipse(0, 0, this.r * 2 + 20, this.r * 2 + 20);
+      strokeWeight(5);
+      ellipse(this.p.x, this.p.y, this.s * 2 + 10, this.s * 2 + 10);
       if (this.active) {
-        // strokeWeight(1);
-        // noFill();
-        // stroke(color(0,155,255));
-        // ellipse(0,0,this.r*2+20,this.r*2+20);
-        strokeWeight(10);
         stroke(color(0, 0, 255));
         fill(color(0, 155, 255));
-        ellipse(0, 0, this.r * 2, this.r * 2);
+        ellipse(this.p.x, this.p.y, this.s * 2, this.s * 2);
         noFill();
         for (let i = 0; i < this.particles_a.length; i++) {
           let r =
-            this.r - ((this.r * this.particles_r[i] + frameCount * 1) % this.r);
+            this.s - ((this.s * this.particles_r[i] + frameCount * 1) % this.s);
           let a = (this.particles_a[i] + frameCount * 0.03) % TWO_PI;
-          strokeWeight(5 * sqrt(r / this.r));
+          strokeWeight(2 * sqrt(r / this.s));
           point(r * Math.cos(a), r * Math.sin(a));
         }
       }
@@ -186,20 +257,40 @@ class Goal {
   }
 }
 
-class Platform {
-  constructor(radius, a, b, c = color(0, 0, 0), f = 0.5) {
-    this.r = radius;
-    this.a = a;
-    this.b = b;
-    this.c = c;
-    this.friction = f;
-    this.solid = true;
+class Key extends StaticFeature {
+  constructor(radius, a) {
+    super(radius, a, 60);
+    this.collected = false;
+  }
+
+  checkCollision(that) {
+    if (that instanceof Player) {
+      super.checkCollision(that);
+    }
+  }
+
+  collide(entity) {
+    if (!this.collected) {
+      this.collected = true;
+      tCollected += 1;
+      if (tCollected >= tGoal) {
+        goal.active = true;
+      }
+    }
   }
 
   draw() {
+    let x = this.p.x,
+      y = this.p.y;
     noFill();
-    stroke(this.c);
-    strokeWeight(2);
-    arc(0, 0, this.r * 2, this.r * 2, this.a + rotation(), this.b + rotation());
+    strokeWeight(6);
+    if (!this.collected) {
+      stroke(250, 220, 50);
+    } else {
+      stroke(200);
+    }
+    ellipse(x - 15, y + 15, 24, 24);
+    line(x - 6, y + 6, x + 15, y - 15);
+    line(x + 15, y - 15, x + 22, y - 8);
   }
 }

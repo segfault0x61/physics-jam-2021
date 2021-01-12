@@ -1,25 +1,43 @@
-let keys, ball, fix, platforms, entities;
+let keys, ball, fix, platforms, features, goal, entities;
+let tCollected = 0;
+let tGoal;
 let rot, drot;
 let dim = 800;
 let file;
 let r, rr, MAX_SPEED, JUMP;
-const FRICTION = 0.5;
+let kx, ky;
+
+let stars;
+
+let lnum = 0;
+const levels = ['test'];
 
 function preload() {
   file = loadLevel('test');
 }
 
 function setup() {
-  readLevel(file);
   createCanvas(dim, dim);
   smooth();
+  platforms = [];
   keys = [];
   fix = [];
-  ball = new Player(40, color(50, 150, 250));
+  goal = new Goal(false, true, 40);
+  features = [goal];
+  readLevel(file);
+  ball = new Player(40, color(209, 50, 227));
   entities = [ball];
-  goal = new Goal(true, true, 150);
   for (let i = 0; i < 30; i++) {
     entities.push(new Marker(20, color(125, 125, 125), (i * PI) / 6));
+  }
+  stars = [];
+  let nstars = (dim * dim) / 400;
+  for (let i = 0; i < nstars; i++) {
+    stars.push([
+      (Math.random() - 0.5) * dim * sqrt(2),
+      (Math.random() - 0.5) * dim * sqrt(2),
+      Math.random() * 3 + 1,
+    ]);
   }
   rot = ball.p.heading();
   drot = 0;
@@ -53,7 +71,6 @@ function collide(r, a, yv, s) {
       return i;
     }
   }
-  return -1;
 }
 
 function rotation() {
@@ -72,19 +89,21 @@ function readLevel(f) {
     (rr = float(t[1])),
     (MAX_SPEED = float(t[2])),
     (JUMP = float(t[3]));
-
   // Platforms
   n = int(f[fi++]);
-  platforms = [];
   while (n--) {
     t = splitTokens(f[fi++]);
-    platforms.push(new Platform(int(t[0]), float(t[1]), float(t[2])));
+    platforms.push(
+      new Platform(int(t[0]), float(t[1]), float(t[2]), color(0), float(t[3]))
+    );
   }
   platforms.push(new Platform(r, 0, TWO_PI));
   // Keys
   n = int(f[fi++]);
+  tGoal = n;
   while (n--) {
     t = splitTokens(f[fi++]);
+    features.push(new Key(int(t[0]), float(t[1])));
   }
   // Spikes
   n = int(f[fi++]);
@@ -97,31 +116,77 @@ function readLevel(f) {
   while (n--) {
     t = splitTokens(f[fi++]);
   }
+  // Level display
+  kx = levels[lnum].length * 24 + 65;
+  ky = 45;
 }
 
-function drawLevel() {
-  ball.update();
-  for (let i = 0; i < entities.length; i++) {
-    entities[i].update();
-  }
-  translate(dim / 2, dim / 2);
-  // rotate(-ball.p.heading()+HALF_PI);
-  // scale(0.5,0.5);
-  // translate(-ball.p.x,-ball.p.y);
-  // noFill();
-  // stroke(0);
-  // strokeWeight(1);
-  // ellipse(0, 0, r*2, r*2);
-  rotate(-rot + HALF_PI);
-  scale(0.3, 0.3);
-  // translate(-ball.p.x,-ball.p.y);
-  goal.draw();
+function display() {
+  noStroke();
+  ellipse(0, 0, r * 2, r * 2);
   for (let i = 0; i < entities.length; i++) {
     entities[i].draw();
   }
   for (let i = 0; i < platforms.length; i++) {
     platforms[i].draw();
   }
+  for (let i = 0; i < features.length; i++) {
+    features[i].draw();
+  }
+}
+
+function updateLevel() {
+  for (let i = 0; i < entities.length; i++) {
+    entities[i].update();
+  }
+  for (let i = 0; i < features.length; i++) {
+    features[i].update();
+  }
+}
+
+function drawLevel() {
+  background(25);
+  updateLevel();
+  // Stars
+  push();
+  translate(dim / 2, dim / 2);
+  rotate(-rot + HALF_PI);
+  noStroke();
+  fill(255, 255, 220);
+  for (let i = 0; i < stars.length; i++) {
+    ellipse(stars[i][0], stars[i][1], stars[i][2], stars[i][2]);
+  }
+  pop();
+  // Level
+  push();
+  translate(dim / 2, dim / 2);
+  rotate(-rot + HALF_PI);
+  translate(-ball.p.x, -ball.p.y);
+  fill(250);
+  display();
+  pop();
+  // Minimap
+  push();
+  noStroke();
+  translate(dim - dim / 8 - 10, dim - dim / 8 - 10);
+  rotate(-rot + HALF_PI);
+  scale(0.1, 0.1);
+  fill(255, 200);
+  display();
+  pop();
+  // Level info
+  noStroke();
+  fill(0);
+  textAlign(LEFT, CENTER);
+  textFont('Courier New', 40);
+  text(levels[lnum], 30, 50);
+  text(tCollected + '/' + tGoal, kx + 25, 50);
+  stroke(250, 220, 50);
+  strokeWeight(4);
+  noFill();
+  ellipse(kx - 10, ky + 10, 16, 16);
+  line(kx - 4, ky + 4, kx + 10, ky - 10);
+  line(kx + 10, ky - 10, kx + 15, ky - 5);
   // Smooth rotation
   rot = (rot + TWO_PI) % TWO_PI;
   let targ = (ball.p.heading() + TWO_PI) % TWO_PI;
@@ -140,6 +205,6 @@ function drawLevel() {
 }
 
 function draw() {
-  background(230);
+  background(0);
   drawLevel();
 }
