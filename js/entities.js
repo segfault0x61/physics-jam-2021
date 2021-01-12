@@ -1,22 +1,24 @@
 class Entity {
-  constructor(size, angle = 0) {
+  constructor(size, r_pos, angle, l = -1) {
     this.s = size;
-    this.p = createVector(0, r - this.s / 2);
-    this.v = createVector(rr, 0);
+    if (l != -1) {
+      r_pos = platforms[l].r;
+    }
+    this.p = createVector(0, r_pos - this.s / 2);
+    this.v = createVector(-1 * rr * r_pos, 0);
     this.p.rotate(angle);
     this.v.rotate(angle);
-    this.l = platforms.length - 1;
+    this.l = l;
     this.collisions = false;
+    this.dead = false;
   }
 
   update() {
-    var rv = rr * this.p.mag(); // The speed of the ground
     if (this.l != -1) {
       this.onPlatform();
     }
     let current_r = this.p.mag();
     let current_a = (this.p.heading() - rotation() + 2 * TWO_PI) % TWO_PI;
-    let yv = this.v.dot(this.p) / this.p.mag();
     if (this.l == -1) {
       this.p.add(this.v);
       let collision = -1;
@@ -38,7 +40,7 @@ class Entity {
       }
     }
     if (this.l != -1) {
-      // Check if we walked off the platform
+      // Check if fell off a platform
       if (!angleCheck(current_a, platforms[this.l].a, platforms[this.l].b)) {
         this.onFall();
       }
@@ -47,6 +49,7 @@ class Entity {
       for (let i = 0; i < entities.length; i++) {
         if (
           entities[i] != this &&
+          !entities[i].dead &&
           this.p.dist(entities[i].p) <= this.s + entities[i].s
         ) {
           this.onCollideEntity(entities[i]);
@@ -72,15 +75,14 @@ class Entity {
 }
 
 class SolidEntity extends Entity {
-  constructor(size, angle = 0) {
-    super(size, angle);
+  constructor(size, r_pos, angle = 0, l = -1) {
+    super(size, r_pos, angle, l);
     this.vt = rr * this.p.mag(); // Velocity tangential, used when landed
   }
 
   onPlatform() {
-    var rv = rr * this.p.mag(); // The speed of the ground
+    var rv = rr * this.p.mag(); // the speed of the ground
     var platform = platforms[this.l];
-
     // Friction: Tries to match ground velocity
     if (this.vt < rv) {
       this.vt = min(rv, this.vt + platform.friction);
@@ -107,8 +109,8 @@ class SolidEntity extends Entity {
 }
 
 class Player extends SolidEntity {
-  constructor(size, color, angle = 0) {
-    super(size, angle);
+  constructor(size, color, r_pos, angle, l = -1) {
+    super(size, r_pos, angle, l);
     this.c = color;
     this.collisions = true;
   }
@@ -147,8 +149,8 @@ class Player extends SolidEntity {
 }
 
 class Marker extends SolidEntity {
-  constructor(size, color, angle = 0) {
-    super(size, angle);
+  constructor(size, color, r_pos, angle = 0, l = -1) {
+    super(size, r_pos, angle, l);
     this.c = color;
   }
 

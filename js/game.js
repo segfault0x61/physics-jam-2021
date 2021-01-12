@@ -17,7 +17,7 @@ let stars;
 let levelNumber = 1;
 let levelFiles = [];
 let levelButtons = [];
-const levels = ["Level 1", "Level 2"];
+const levels = ["Level 1", "Level 2", "Level 3"];
 
 let homeButton, aboutButton;
 let donea = 0;
@@ -104,6 +104,7 @@ class LevelButton {
       this.a = 100;
       if (clicked) {
         if (this.dir == "") {
+          gameticks = 0;
           levelNumber = this.n;
           readLevel(levelFiles[levelNumber]);
           tPage = "Game";
@@ -149,7 +150,7 @@ class LevelButton {
 
 function readLevel(f) {
   platforms = [];
-  goal = new Goal(false, true, 40);
+  goal = new Goal(false, true, 60);
   features = [goal];
   let fi = 0,
     n;
@@ -195,10 +196,18 @@ function readLevel(f) {
 
   // Player setup
   fix = [];
-  ball = new Player(40, color(209, 50, 227));
+  ball = new Player(40, color(209, 50, 227), r, 0, platforms.length - 1);
   entities = [ball];
   for (let i = 0; i < 12; i++) {
-    entities.push(new Marker(20, color(125, 125, 125), (i * PI) / 6 + PI / 12));
+    entities.push(
+      new Marker(
+        20,
+        color(255, 0, 0),
+        r,
+        (i * PI) / 6 + PI / 12,
+        platforms.length - 1
+      )
+    );
   }
   drot = 0;
 }
@@ -225,6 +234,7 @@ function updateLevel() {
   for (let i = 0; i < features.length; i++) {
     features[i].update();
   }
+  
 }
 
 function drawHome() {
@@ -355,7 +365,6 @@ function draw() {
   pop();
   if (page === "Home") {
     drawHome();
-    gameticks = 0;
   }
   if (page === "Game") {
     drawLevel();

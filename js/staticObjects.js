@@ -60,11 +60,10 @@ class Goal extends StaticObject {
         noFill();
         if (!this.f) {
           for (let i = 0; i < this.particles_a.length; i++) {
-            let r =
-              this.s -
-              ((this.s * this.particles_r[i] + frameCount * 1) % this.s);
+            let s = this.s / 2;
+            let r = s - ((s * this.particles_r[i] + frameCount * 1) % s);
             let a = (this.particles_a[i] + frameCount * 0.03) % TWO_PI;
-            strokeWeight(2 * sqrt(r / this.s));
+            strokeWeight(2 * sqrt(r / s));
             point(r * Math.cos(a), r * Math.sin(a));
           }
         }
