@@ -6,7 +6,7 @@ let clicked = false;
 let totalCollected = 0;
 let totalGoal;
 let rot, drot;
-let dim = 800;
+let dim = 700;
 let file;
 let r, rr, MAX_SPEED, JUMP;
 let kx, ky;
@@ -195,7 +195,9 @@ function drawHome() {
   text('Forces of Coriolis', dim / 2, dim / 4);
   textSize(20);
   textAlign(LEFT, BOTTOM);
-  text('By segfault0x61', 30, dim - 30);
+  text('Programming and Art: segfault0x61', 30, dim - 50);
+  text('Music: cynicmusic (opengameart)', 30, dim - 30);
+  text('SFX: SubspaceAudio (opengameart)', 30, dim - 10);
   for (let i = 0; i < levels.length; i++) {
     levelButtons[i].draw();
   }
@@ -220,7 +222,7 @@ function drawLevel() {
   // Minimap
   push();
   noStroke();
-  translate(dim - dim / 8 - 10, dim - dim / 8 - 10);
+  translate(dim - dim / 8 - 35, dim - dim / 8 - 35);
   rotate(-rot + HALF_PI);
   scale(0.1, 0.1);
   fill(255, 200);
