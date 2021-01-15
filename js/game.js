@@ -195,7 +195,8 @@ function readLevel(f) {
 
   // Player setup
   fix = [];
-  ball = new Player(40, color(209, 50, 227), r, 0, platforms.length - 1);
+  ball = new Player(20, color(209, 50, 227), r, 0, platforms.length - 1);
+
   entities = [ball];
   for (let i = 0; i < 12; i++) {
     entities.push(

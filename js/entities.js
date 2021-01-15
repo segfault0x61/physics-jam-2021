@@ -4,7 +4,7 @@ class Entity {
     if (l != -1) {
       r_pos = platforms[l].r;
     }
-    this.p = createVector(0, r_pos - this.s / 2);
+    this.p = createVector(0, r_pos - this.s);
     this.v = createVector(-1 * rr * r_pos, 0);
     this.p.rotate(angle);
     this.v.rotate(angle);
@@ -97,7 +97,7 @@ class SolidEntity extends Entity {
 
   onCollide(collision) {
     this.l = collision;
-    this.p.setMag(platforms[collision].r - this.s / 2);
+    this.p.setMag(platforms[collision].r - this.s);
     this.vt = -1 * Math.sin(this.v.angleBetween(this.p)) * this.v.mag();
     this.v.rotate(this.p.heading() + HALF_PI - this.v.heading());
     this.v.setMag(this.vt);
@@ -136,14 +136,14 @@ class Player extends SolidEntity {
   draw() {
     noStroke();
     fill(this.c);
-    ellipse(this.p.x, this.p.y, this.s, this.s);
+    ellipse(this.p.x, this.p.y, this.s * 2, this.s * 2);
   }
 
   onCollideEntity(entity) {}
 
   inflict(damage) {
     if (damage >= 10) {
-      console.log("YOU LOSE!");
+      console.log('YOU LOSE!');
     }
   }
 }
@@ -157,6 +157,6 @@ class Marker extends SolidEntity {
   draw() {
     noStroke();
     fill(this.c);
-    ellipse(this.p.x, this.p.y, this.s, this.s);
+    ellipse(this.p.x, this.p.y, this.s * 2, this.s * 2);
   }
 }
