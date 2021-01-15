@@ -56,6 +56,14 @@ function setup() {
   aboutButton = new LevelButton(0, dim - 100, dim - 100, '?', 'About');
   homeButton = new LevelButton(0, 100, dim - 100, 'Home', 'Home');
   rot = 0;
+
+  // If levels were previously completed, make sure this is shown
+  for (let i = 0; i < levelButtons.length; i++) {
+    if (localStorage.getItem('Level ' + (i + 1)) == null) {
+      continue;
+    }
+    levelButtons[i].s = localStorage.getItem('Level ' + (i + 1));
+  }
 }
 
 function keyPressed() {
@@ -287,8 +295,16 @@ function drawDone() {
 
   // Update level data
   levelButtons[levelNumber].s = 2;
+  localStorage.setItem(
+    'Level ' + (levelNumber + 1),
+    levelButtons[levelNumber].s
+  );
   if (levelNumber + 1 < levels.length) {
     levelButtons[levelNumber + 1].s |= 1;
+    localStorage.setItem(
+      'Level ' + (levelNumber + 2),
+      levelButtons[levelNumber + 1].s
+    );
   }
 
   // Fade out
