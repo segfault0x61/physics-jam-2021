@@ -1,5 +1,5 @@
-let page = "Home",
-  tPage = "Home";
+let page = 'Home',
+  tPage = 'Home';
 
 let keys, ball, fix, platforms, features, goal, entities;
 let clicked = false;
@@ -17,7 +17,7 @@ let stars;
 let levelNumber = 1;
 let levelFiles = [];
 let levelButtons = [];
-const levels = ["Level 1", "Level 2", "Level 3"];
+const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4'];
 
 let homeButton, playAgainButton, aboutButton;
 let donea = 0;
@@ -52,8 +52,8 @@ function setup() {
       );
     }
   }
-  aboutButton = new LevelButton(0, dim - 100, dim - 100, "?", "About");
-  homeButton = new LevelButton(0, 100, dim - 100, "Home", "Home");
+  aboutButton = new LevelButton(0, dim - 100, dim - 100, '?', 'About');
+  homeButton = new LevelButton(0, 100, dim - 100, 'Home', 'Home');
   rot = 0;
 }
 
@@ -83,11 +83,11 @@ function rotation() {
 }
 
 function loadLevel(filename) {
-  return loadStrings("./assets/levels/" + filename + ".txt");
+  return loadStrings('./assets/levels/' + filename + '.txt');
 }
 
 class LevelButton {
-  constructor(n, x, y, txt = "", dir = "") {
+  constructor(n, x, y, txt = '', dir = '') {
     this.n = n;
     this.x = x;
     this.y = y;
@@ -95,7 +95,7 @@ class LevelButton {
     this.dir = dir;
     this.a = 50;
     this.s = !n; // 0 = locked, 1 = unlocked, anything else = beaten
-    if (this.txt == "") {
+    if (this.txt == '') {
       this.txt += n + 1;
     }
   }
@@ -104,11 +104,11 @@ class LevelButton {
     if (dist(mouseX, mouseY, this.x, this.y) <= 63 && this.s) {
       this.a = 100;
       if (clicked) {
-        if (this.dir == "") {
+        if (this.dir == '') {
           gameticks = 0;
           levelNumber = this.n;
           readLevel(levelFiles[levelNumber]);
-          tPage = "Game";
+          tPage = 'Game';
           homeButton.x = 100;
           homeButton.y = dim - 100;
           totalCollected = 0;
@@ -185,8 +185,6 @@ function readLevel(f) {
     t = splitTokens(f[fi++]);
   }
 
-  // Enemies
-
   n = int(f[fi++]);
   while (n--) {
     t = splitTokens(f[fi++]);
@@ -241,11 +239,11 @@ function drawHome() {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textFont("Courier New", 60);
-  text("Forces of Coriolis", dim / 2, dim / 4);
+  textFont('Courier New', 60);
+  text('Forces of Coriolis', dim / 2, dim / 4);
   textSize(20);
   textAlign(LEFT, BOTTOM);
-  text("By segfault0x61", 30, dim - 30);
+  text('By segfault0x61', 30, dim - 30);
   for (let i = 0; i < levels.length; i++) {
     levelButtons[i].draw();
   }
@@ -281,9 +279,9 @@ function drawLevel() {
   noStroke();
   fill(0);
   textAlign(LEFT, CENTER);
-  textFont("Courier New", 40);
+  textFont('Courier New', 40);
   text(levels[levelNumber], 30, 50);
-  text(totalCollected + "/" + totalGoal, kx + 25, 50);
+  text(totalCollected + '/' + totalGoal, kx + 25, 50);
   stroke(250, 220, 50);
   strokeWeight(4);
   noFill();
@@ -314,13 +312,13 @@ function drawLevel() {
       levelNumber,
       dim / 2 + 75,
       dim / 2 + 100,
-      "Again"
+      'Again'
     );
     playAgainButton.s = 1;
     homeButton.x = dim / 2 - 75;
     homeButton.y = dim / 2 + 100;
     donea = 0;
-    page = tPage = "Done";
+    page = tPage = 'Done';
   }
 }
 
@@ -338,7 +336,11 @@ function drawDone() {
   fill(255);
   textSize(50);
   textAlign(CENTER, CENTER);
-  text("Level complete", dim / 2, dim / 3);
+  text(
+    'Level complete\nTime: ' + (gameticks / 60).toFixed(2),
+    dim / 2,
+    dim / 3
+  );
   homeButton.draw();
   playAgainButton.draw();
 
@@ -356,8 +358,8 @@ function drawAbout() {
   fill(255);
   noStroke();
   textAlign(CENTER, CENTER);
-  textFont("Courier New", 60);
-  text("About", dim / 2, dim / 4);
+  textFont('Courier New', 60);
+  text('About', dim / 2, dim / 4);
   textSize(20);
   textAlign(LEFT, TOP);
   text(
@@ -388,17 +390,17 @@ function draw() {
     ellipse(stars[i][0], stars[i][1], stars[i][2], stars[i][2]);
   }
   pop();
-  if (page === "Home") {
+  if (page === 'Home') {
     drawHome();
   }
-  if (page === "Game") {
+  if (page === 'Game') {
     drawLevel();
     gameticks++;
   }
-  if (page === "Done") {
+  if (page === 'Done') {
     drawDone();
   }
-  if (page === "About") {
+  if (page === 'About') {
     drawAbout();
   }
 
@@ -409,7 +411,7 @@ function draw() {
       page = tPage;
 
       // Align camera to player
-      if (tPage == "Game") {
+      if (tPage == 'Game') {
         rot = ball.p.heading();
       }
     }
