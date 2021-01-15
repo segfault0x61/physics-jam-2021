@@ -19,7 +19,7 @@ let levelFiles = [];
 let levelButtons = [];
 const levels = ['Level 1', 'Level 2', 'Level 3', 'Level 4'];
 
-let homeButton, playAgainButton, aboutButton;
+let homeButton, playAgainButton, aboutButton, resetButton;
 let donea = 0;
 let trana = 0;
 
@@ -55,6 +55,13 @@ function setup() {
   }
   aboutButton = new LevelButton(0, dim - 100, dim - 100, '?', 'About');
   homeButton = new LevelButton(0, 100, dim - 100, 'Home', 'Home');
+  resetButton = new LevelButton(
+    0,
+    dim - 100,
+    dim - 100,
+    'Reset\nProgress',
+    'Reset'
+  );
   rot = 0;
 
   // If levels were previously completed, make sure this is shown
@@ -336,9 +343,34 @@ function drawAbout() {
     dim - 200,
     dim
   );
+
+  resetButton.x = 600;
+  resetButton.y = dim - 100;
+  resetButton.draw();
+
   homeButton.x = 100;
   homeButton.y = dim - 100;
   homeButton.draw();
+
+  // Background rotation
+  rot += 0.001;
+}
+
+function drawReset() {
+  fill(255);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textFont('Courier New', 60);
+  text('Data Reset', dim / 2, dim / 4);
+  textSize(20);
+  textAlign(LEFT, TOP);
+  text(
+    'You will need to refresh the page to see the changes made.',
+    100,
+    dim / 3,
+    dim - 200,
+    dim
+  );
 
   // Background rotation
   rot += 0.001;
@@ -372,6 +404,11 @@ function draw() {
   }
   if (page === 'About') {
     drawAbout();
+  }
+  if (page === 'Reset') {
+    localStorage.clear();
+    // window.top.location.reload();
+    drawReset();
   }
 
   // Generage scene transition animation
