@@ -64,6 +64,11 @@ function setup() {
     }
     levelButtons[i].s = localStorage.getItem('Level ' + (i + 1));
   }
+
+  var audio = new Audio('./assets/sound/006_lifeWave2k.mp3');
+  audio.volume = 0.5;
+  audio.loop = true;
+  audio.play();
 }
 
 function keyPressed() {
@@ -268,6 +273,9 @@ function drawLevel() {
     homeButton.y = dim / 2 + 100;
     donea = 0;
     page = tPage = 'Done';
+
+    var audio = new Audio('./assets/sound/sfx_movement_portal1.wav');
+    audio.play();
   }
 }
 

@@ -86,6 +86,9 @@ class Key extends StaticObject {
 
   collide(entity) {
     if (!this.collected) {
+      var audio = new Audio('./assets/sound/sfx_coin_single1.wav');
+      audio.play();
+
       this.collected = true;
       totalCollected += 1;
       if (totalCollected >= totalGoal) {

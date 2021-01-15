@@ -128,6 +128,9 @@ class Player extends SolidEntity {
       if (keys[UP_ARROW]) {
         this.v.add(p5.Vector.mult(this.p, (-1 * JUMP) / this.p.mag()));
         this.l = -1;
+
+        var audio = new Audio('./assets/sound/sfx_movement_jump8.wav');
+        audio.play();
       }
     }
     super.update();
