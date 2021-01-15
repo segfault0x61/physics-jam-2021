@@ -1,16 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/main.css" />
-    <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
-    <script src="js/gui.js"></script>
-    <script src="js/entities.js"></script>
-    <script src="js/staticObjects.js"></script>
-    <script src="js/gameObjects.js"></script>
-    <script src="js/game.js"></script>
-    <title>Forces of Coriolis</title>
-  </head>
-  <body></body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/main.css" />
+  <script type='text/javascript'>
+    var lastTarget, canvas, body;
+    window.onload = function () {
+      body = document.querySelector('body'),
+        canvas = document.getElementById('canvas');
+      var activateCanvas = function (event) {
+        lastTarget = event.target;
+        window.setFocus();
+        console.log("Set focus on window");
+      }
+      var preventScroll = function (event) {
+        var keyCodes = [32, 37, 38, 39, 40];
+        if (lastTarget != canvas) {
+          return false;
+        }
+        console.log('Key pressed: ' + event.keyCode);
+        if (keyCodes.includes(event.keyCode)) {
+          event.preventDefault();
+        }
+      }
+      var handleMouseDown = function (event) {
+        window.focus();
+        event.preventDefault();
+        event.stopPropagation();
+        event.target.style.cursor = 'default';
+      }
+      body.addEventListener('keydown', preventScroll, false);
+      body.addEventListener('click', activateCanvas, false);
+      canvas.addEventListener('mousedown', handleMouseDown, false);
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+  <script src="js/gui.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/staticObjects.js"></script>
+  <script src="js/gameObjects.js"></script>
+  <script src="js/game.js"></script>
+  <title>Forces of Coriolis</title>
+</head>
+
+<body></body>
+
 </html>
